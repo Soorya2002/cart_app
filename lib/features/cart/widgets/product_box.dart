@@ -2,7 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class ProductBox extends StatelessWidget {
-  const ProductBox({super.key});
+  final String name;
+  final String price;
+  final String imagePath;
+  final VoidCallback? onPressed;
+  const ProductBox({
+    super.key,
+    required this.name,
+    required this.price,
+    required this.imagePath,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +32,7 @@ class ProductBox extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Image.asset(
-              'assets/wall_decor.jpg',
+              imagePath,
               height: 140,
               width: 180,
               fit: BoxFit.cover,
@@ -30,7 +40,7 @@ class ProductBox extends StatelessWidget {
           ),
           Gap(10),
           Text(
-            'Wall Decor',
+            name,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey,
@@ -40,11 +50,14 @@ class ProductBox extends StatelessWidget {
           Gap(10),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: [Gap(10), Text('₹ 250', style: TextStyle(fontSize: 16))],
+            children: [
+              Gap(10),
+              Text("₹$price", style: TextStyle(fontSize: 16)),
+            ],
           ),
           Gap(10),
           OutlinedButton(
-            onPressed: () {},
+            onPressed: onPressed,
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.blue,
               side: BorderSide(color: Colors.blue),
@@ -53,7 +66,7 @@ class ProductBox extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: Text('Add to Cart'),
+            child: Text('Add to Cart', style: TextStyle(color: Colors.blue)),
           ),
           Gap(10),
         ],

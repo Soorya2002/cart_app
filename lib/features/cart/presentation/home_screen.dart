@@ -1,10 +1,27 @@
+import 'package:cart_app/features/cart/provider/product_provider.dart';
 import 'package:cart_app/features/cart/widgets/product_box.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late ProductProvider productProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    productProvider = context.read<ProductProvider>();
+    productProvider.fetchProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +31,10 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Gap(30),
+            const Gap(30),
             Row(
               children: [
-                Text(
+                const Text(
                   'Products',
                   style: TextStyle(
                     color: Colors.blue,
@@ -25,12 +42,12 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 IconButton(
                   onPressed: () {
                     context.pushNamed('cart');
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.shopping_cart_outlined,
                     color: Colors.blue,
                     size: 30,
@@ -38,27 +55,101 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-            Gap(20),
+            const Gap(20),
 
             /// Grid View with 2 Columns
             Expanded(
-              child: GridView.builder(
-                padding: EdgeInsets.only(bottom: 10),
-                itemCount: 6, // Change this to the number of products
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12, // Horizontal spacing
-                  mainAxisSpacing: 12, // Vertical spacing
-                  childAspectRatio: 0.63, // Adjust height ratio
-                ),
-                itemBuilder: (context, index) {
-                  return ProductBox();
+              child: Consumer<ProductProvider>(
+                builder: (context, value, child) {
+                  if (value.isLoading) {
+                    return _buildShimmerEffect();
+                  }
+
+                  if (value.product.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "No products found!",
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                    );
+                  }
+
+                  return GridView.builder(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    itemCount: value.product.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.63,
+                        ),
+                    itemBuilder: (context, index) {
+                      return ProductBox(
+                        name: value.product[index].name ?? "",
+                        price: value.product[index].price ?? "",
+                        imagePath: 'assets/wall_decor.jpg',
+                      );
+                    },
+                  );
                 },
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  /// Shimmer effect for loading state
+  Widget _buildShimmerEffect() {
+    return GridView.builder(
+      padding: const EdgeInsets.only(bottom: 10),
+      itemCount: 6, // Number of shimmer boxes
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.63,
+      ),
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 140,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                const Gap(10),
+                Container(height: 16, width: 80, color: Colors.grey[300]),
+                const Gap(10),
+                Container(height: 16, width: 50, color: Colors.grey[300]),
+                const Gap(10),
+                Container(
+                  height: 40,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

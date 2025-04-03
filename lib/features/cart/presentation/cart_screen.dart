@@ -1,6 +1,8 @@
+import 'package:cart_app/core/utils/storage_services.dart';
 import 'package:cart_app/features/cart/widgets/cart_box.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -32,8 +34,10 @@ class CartScreen extends StatelessWidget {
                 ),
                 Spacer(),
                 IconButton(
-                  onPressed: () {
-                    // context.pushNamed('cart');
+                  onPressed: () async {
+                    await StorageServices().logout();
+                    // ignore: use_build_context_synchronously
+                    context.go('/login');
                   },
                   icon: Icon(Icons.logout, color: Colors.blue, size: 30),
                 ),
