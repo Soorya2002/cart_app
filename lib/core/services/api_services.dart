@@ -45,4 +45,8 @@ class ApiService {
   Future<Response> getRequest(String endpoint) async {
     return await _dio.get(endpoint);
   }
+
+  Future<Response> deleteRequest(String endpoint) async {
+    return await _dio.delete(endpoint);
+  }
 }

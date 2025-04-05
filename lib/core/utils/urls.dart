@@ -6,4 +6,7 @@ class Urls {
   static String register = "/users/register";
   static String login = "/users/login";
   static String home = "/product";
+  static String cart = "/cart";
+  static String addcart = "/cart/add";
+  static String remove(String productId) => "/cart/$productId";
 }

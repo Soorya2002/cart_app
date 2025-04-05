@@ -89,6 +89,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         name: value.product[index].name ?? "",
                         price: value.product[index].price ?? "",
                         imagePath: 'assets/wall_decor.jpg',
+                        onPressed: () {
+                          context.read<ProductProvider>().addCart(
+                            productId: value.product[index].id ?? "",
+                          );
+                        },
                       );
                     },
                   );
