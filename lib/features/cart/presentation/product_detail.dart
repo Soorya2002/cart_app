@@ -5,51 +5,58 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class ProductDetailScreen extends StatefulWidget {
-  final ProductModel product;
-  const ProductDetailScreen({super.key, required this.product});
+class ProductDetailScreen extends StatelessWidget {
+  final String productId;
+  const ProductDetailScreen({super.key, required this.productId});
 
-  @override
-  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
-}
-
-class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final productProvider = context.watch<ProductProvider>();
 
-    // ✅ FIXED: Properly checks all cart items, not just the first
-    final isInCart = productProvider.cart.any(
-      (cart) =>
-          cart.items?.any((item) => item.productId == widget.product.id) ??
-          false,
+    final products = productProvider.product;
+
+    // Safely find the product
+    final product = products.firstWhere(
+      (p) => p.id == productId,
+      orElse: () => ProductModel(id: "", name: "Unknown", price: ''),
     );
+
+    // If product wasn't found, show a fallback
+    if (product.id == "") {
+      return Scaffold(
+        appBar: AppBar(),
+        body: const Center(child: Text("Product not found")),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(),
       body: Column(
         children: [
           Image.asset('assets/wall_decor.jpg'),
-          Gap(20),
+          const Gap(20),
           Row(
             children: [
-              Gap(20),
+              const Gap(20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.product.name ?? "",
-                    style: TextStyle(fontSize: 30, color: Colors.blue),
+                    product.name ?? "",
+                    style: const TextStyle(fontSize: 30, color: Colors.blue),
                   ),
-                  Gap(10),
+                  const Gap(10),
                   Text(
-                    '₹ ${widget.product.price}',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    '₹ ${product.price}',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
-              Spacer(),
-              isInCart
+              const Spacer(),
+              product.alreadyInCart == true
                   ? ElevatedButton(
                     onPressed: () {
                       context.pushNamed('cart');
@@ -60,7 +67,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'View in Cart',
                       style: TextStyle(color: Colors.white),
                     ),
@@ -68,23 +75,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   : OutlinedButton(
                     onPressed: () {
                       context.read<ProductProvider>().addCart(
-                        productId: widget.product.id ?? "",
+                        productId: product.id ?? "",
                       );
-                      // No need to call setState if you're already using Provider
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.blue,
-                      side: BorderSide(color: Colors.blue),
+                      side: const BorderSide(color: Colors.blue),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Add to Cart',
                       style: TextStyle(color: Colors.blue),
                     ),
                   ),
-              Gap(10),
+              const Gap(10),
             ],
           ),
         ],

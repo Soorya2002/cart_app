@@ -43,10 +43,12 @@ class ProductBox extends StatelessWidget {
           Gap(10),
           Text(
             name,
-            style: TextStyle(
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
               fontSize: 18,
+              fontWeight: FontWeight.w600,
               color: Colors.grey,
-              fontWeight: FontWeight.bold,
             ),
           ),
           Gap(10),

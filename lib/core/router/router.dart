@@ -1,10 +1,10 @@
 import 'package:cart_app/features/authentication/splash/splash_screen.dart';
-import 'package:cart_app/features/cart/models/product_model.dart';
 import 'package:cart_app/features/cart/presentation/cart_screen.dart';
 import 'package:cart_app/features/authentication/presentation/login_screen.dart';
 import 'package:cart_app/features/authentication/presentation/signup_screen.dart';
 import 'package:cart_app/features/cart/presentation/home_screen.dart';
 import 'package:cart_app/features/cart/presentation/product_detail.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -37,13 +37,19 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => CartScreen(),
     ),
     GoRoute(
-      path: '/productdetail',
-      name: 'productdetail',
+      path: '/product-detail/:id',
+      name: 'productDetail',
       builder: (context, state) {
-        final product = state.extra as ProductModel;
-        return ProductDetailScreen(product: product);
+        final productId = state.pathParameters['id'];
+
+        if (productId == null) {
+          return const Scaffold(
+            body: Center(child: Text('Product ID not found in path')),
+          );
+        }
+
+        return ProductDetailScreen(productId: productId);
       },
-      // },
     ),
   ],
 );

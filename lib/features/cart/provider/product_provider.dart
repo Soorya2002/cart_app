@@ -61,7 +61,14 @@ class ProductProvider with ChangeNotifier {
         log('Add to cart response: ${response.data}');
         final Map<String, dynamic> data = response.data as Map<String, dynamic>;
         _cart = [Cart.fromJson(data)];
-        await viewCart(); // Refresh
+
+        // Update the product in the list to mark it as already in cart
+        final index = _products.indexWhere((p) => p.id == productId);
+        if (index != -1) {
+          _products[index].alreadyInCart = true;
+        }
+
+        notifyListeners();
       } else {
         log("Add to cart failed with status code: ${response.statusCode}");
       }
@@ -80,17 +87,12 @@ class ProductProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         log("Item removed successfully: ${response.data}");
         await viewCart();
+        await fetchProducts();
       } else {
         log("Failed to remove item: ${response.statusCode}");
       }
     } catch (e) {
       log("Error removing item from cart: $e");
     }
-  }
-
-  // Check if product is in cart
-  bool isInCart(String productId) {
-    if (_cart.isEmpty || _cart[0].items == null) return false;
-    return _cart[0].items!.any((item) => item.productId == productId);
   }
 }

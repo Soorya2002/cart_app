@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     productProvider = context.read<ProductProvider>();
     productProvider.fetchProducts();
-    productProvider.viewCart(); //
+    productProvider.viewCart();
   }
 
   @override
@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const Gap(20),
 
-            /// Grid View with 2 Columns
+            /// Grid View
             Expanded(
               child: Consumer<ProductProvider>(
                 builder: (context, value, child) {
@@ -87,18 +87,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                     itemBuilder: (context, index) {
                       final product = value.product[index];
-                      final productId = product.id ?? "";
-
-                      final isInCart =
-                          value.cart.isNotEmpty &&
-                          value.cart[0].items?.any(
-                                (item) => item.productId == productId,
-                              ) ==
-                              true;
+                      final isInCart = product.alreadyInCart ?? false;
 
                       return GestureDetector(
                         onTap: () {
-                          context.pushNamed('productdetail', extra: product);
+                          context.pushNamed(
+                            'productDetail',
+                            pathParameters: {'id': product.id ?? ''},
+                          );
                         },
                         child: ProductBox(
                           name: product.name ?? "",
@@ -108,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () {
                             if (!isInCart) {
                               context.read<ProductProvider>().addCart(
-                                productId: productId,
+                                productId: product.id ?? "",
                               );
                             } else {
                               context.pushNamed('cart');
