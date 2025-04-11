@@ -21,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     productProvider = context.read<ProductProvider>();
     productProvider.fetchProducts();
+    productProvider.viewCart(); //
   }
 
   @override
@@ -85,15 +86,35 @@ class _HomeScreenState extends State<HomeScreen> {
                           childAspectRatio: 0.63,
                         ),
                     itemBuilder: (context, index) {
-                      return ProductBox(
-                        name: value.product[index].name ?? "",
-                        price: value.product[index].price ?? "",
-                        imagePath: 'assets/wall_decor.jpg',
-                        onPressed: () {
-                          context.read<ProductProvider>().addCart(
-                            productId: value.product[index].id ?? "",
-                          );
+                      final product = value.product[index];
+                      final productId = product.id ?? "";
+
+                      final isInCart =
+                          value.cart.isNotEmpty &&
+                          value.cart[0].items?.any(
+                                (item) => item.productId == productId,
+                              ) ==
+                              true;
+
+                      return GestureDetector(
+                        onTap: () {
+                          context.pushNamed('productdetail', extra: product);
                         },
+                        child: ProductBox(
+                          name: product.name ?? "",
+                          price: product.price ?? "",
+                          imagePath: 'assets/wall_decor.jpg',
+                          isInCart: isInCart,
+                          onPressed: () {
+                            if (!isInCart) {
+                              context.read<ProductProvider>().addCart(
+                                productId: productId,
+                              );
+                            } else {
+                              context.pushNamed('cart');
+                            }
+                          },
+                        ),
                       );
                     },
                   );
@@ -110,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildShimmerEffect() {
     return GridView.builder(
       padding: const EdgeInsets.only(bottom: 10),
-      itemCount: 6, // Number of shimmer boxes
+      itemCount: 6,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 12,

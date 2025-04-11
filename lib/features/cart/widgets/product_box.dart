@@ -6,12 +6,15 @@ class ProductBox extends StatelessWidget {
   final String price;
   final String imagePath;
   final VoidCallback? onPressed;
+  final bool isInCart;
+
   const ProductBox({
     super.key,
     required this.name,
     required this.price,
     required this.imagePath,
     this.onPressed,
+    this.isInCart = false,
   });
 
   @override
@@ -27,7 +30,6 @@ class ProductBox extends StatelessWidget {
         ],
       ),
       child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
@@ -56,18 +58,32 @@ class ProductBox extends StatelessWidget {
             ],
           ),
           Gap(10),
-          OutlinedButton(
-            onPressed: onPressed,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.blue,
-              side: BorderSide(color: Colors.blue),
-              // padding: EdgeInsets.symmetric(horizontal: 55, vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          isInCart
+              ? ElevatedButton(
+                onPressed: onPressed,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text('View in Cart'),
+              )
+              : OutlinedButton(
+                onPressed: onPressed,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.blue,
+                  side: BorderSide(color: Colors.blue),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  'Add to Cart',
+                  style: TextStyle(color: Colors.blue),
+                ),
               ),
-            ),
-            child: Text('Add to Cart', style: TextStyle(color: Colors.blue)),
-          ),
           Gap(10),
         ],
       ),

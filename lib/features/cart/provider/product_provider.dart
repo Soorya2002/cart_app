@@ -12,11 +12,12 @@ class ProductProvider with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  // Fetch counters from API
+  List<Cart> _cart = [];
+  List<Cart> get cart => _cart;
+
+  // Fetch products
   Future<void> fetchProducts() async {
     _isLoading = true;
-    // notifyListeners();
-
     try {
       Response response = await ProductServices().getProducts();
       if (response.statusCode == 200) {
@@ -34,14 +35,8 @@ class ProductProvider with ChangeNotifier {
   }
 
   // View cart
-
-  List<Cart> _cart = [];
-  List<Cart> get cart => _cart;
-
   Future<void> viewCart() async {
     _isLoading = true;
-    // notifyListeners();
-
     try {
       Response response = await ProductServices().viewCart();
       if (response.statusCode == 200) {
@@ -64,12 +59,9 @@ class ProductProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         log('Add to cart response: ${response.data}');
-
         final Map<String, dynamic> data = response.data as Map<String, dynamic>;
         _cart = [Cart.fromJson(data)];
-
-        // Refresh cart to ensure latest state from server
-        await viewCart();
+        await viewCart(); // Refresh
       } else {
         log("Add to cart failed with status code: ${response.statusCode}");
       }
@@ -78,7 +70,7 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // remove from cart
+  // Remove from cart
   Future<void> removeCartItem({required String productId}) async {
     try {
       Response response = await ProductServices().removeCartItem(
@@ -94,5 +86,11 @@ class ProductProvider with ChangeNotifier {
     } catch (e) {
       log("Error removing item from cart: $e");
     }
+  }
+
+  // Check if product is in cart
+  bool isInCart(String productId) {
+    if (_cart.isEmpty || _cart[0].items == null) return false;
+    return _cart[0].items!.any((item) => item.productId == productId);
   }
 }

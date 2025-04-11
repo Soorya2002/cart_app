@@ -26,83 +26,83 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              Gap(30),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.arrow_back, color: Colors.blue, size: 30),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            const Gap(30),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.blue,
+                    size: 30,
                   ),
-                  Gap(75),
-                  Text(
-                    'My Cart',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 27,
-                      fontWeight: FontWeight.w600,
-                    ),
+                ),
+                const Gap(75),
+                const Text(
+                  'My Cart',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 27,
+                    fontWeight: FontWeight.w600,
                   ),
-                  Spacer(),
-                  IconButton(
-                    onPressed: () async {
-                      await StorageServices().logout();
-                      // ignore: use_build_context_synchronously
-                      context.go('/login');
-                    },
-                    icon: Icon(Icons.logout, color: Colors.blue, size: 30),
-                  ),
-                ],
-              ),
-              Gap(20),
-              Consumer<ProductProvider>(
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () async {
+                    await StorageServices().logout();
+                    // ignore: use_build_context_synchronously
+                    context.go('/login');
+                  },
+                  icon: const Icon(Icons.logout, color: Colors.blue, size: 30),
+                ),
+              ],
+            ),
+            const Gap(20),
+            Expanded(
+              child: Consumer<ProductProvider>(
                 builder: (context, value, child) {
-                  // Check if cart is empty or null
                   if (value.cart.isEmpty ||
                       value.cart[0].items == null ||
                       value.cart[0].items!.isEmpty) {
-                    return Text(
-                      "Your cart is empty",
-                      style: TextStyle(fontSize: 18),
+                    return const Center(
+                      child: Text(
+                        "Your cart is empty",
+                        style: TextStyle(fontSize: 18),
+                      ),
                     );
                   }
 
-                  return SizedBox(
-                    height:
-                        MediaQuery.of(context).size.height *
-                        0.6, // Adjust height
-                    child: ListView.builder(
-                      itemCount: value.cart[0].items!.length,
-                      itemBuilder: (context, index) {
-                        final item = value.cart[0].items![index];
+                  return ListView.builder(
+                    itemCount: value.cart[0].items!.length,
+                    itemBuilder: (context, index) {
+                      final item = value.cart[0].items![index];
 
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 5),
-                          child: CartBox(
-                            imagePath: 'assets/wall_decor.jpg',
-                            name: item.name ?? "",
-                            price: item.price ?? "",
-                            quantity: item.quantity ?? 0,
-                            onRemove: () {
-                              context.read<ProductProvider>().removeCartItem(
-                                productId: item.productId ?? "",
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: CartBox(
+                          imagePath: 'assets/wall_decor.jpg',
+                          name: item.name ?? "",
+                          price: item.price ?? "",
+                          quantity: item.quantity ?? 0,
+                          onRemove: () {
+                            context.read<ProductProvider>().removeCartItem(
+                              productId: item.productId ?? "",
+                            );
+                          },
+                        ),
+                      );
+                    },
                   );
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

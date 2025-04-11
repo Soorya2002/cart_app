@@ -1,8 +1,10 @@
 import 'package:cart_app/features/authentication/splash/splash_screen.dart';
+import 'package:cart_app/features/cart/models/product_model.dart';
 import 'package:cart_app/features/cart/presentation/cart_screen.dart';
 import 'package:cart_app/features/authentication/presentation/login_screen.dart';
 import 'package:cart_app/features/authentication/presentation/signup_screen.dart';
 import 'package:cart_app/features/cart/presentation/home_screen.dart';
+import 'package:cart_app/features/cart/presentation/product_detail.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -33,6 +35,15 @@ final GoRouter appRouter = GoRouter(
       path: '/cart',
       name: 'cart',
       builder: (context, state) => CartScreen(),
+    ),
+    GoRoute(
+      path: '/productdetail',
+      name: 'productdetail',
+      builder: (context, state) {
+        final product = state.extra as ProductModel;
+        return ProductDetailScreen(product: product);
+      },
+      // },
     ),
   ],
 );
